@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cv Gratis</title>
+    <link rel="stylesheet" href="general.css">
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #8593a3;
+}
+.container {
+    display: flex;
+    width: 80%;
+    margin-top: 20px;
+}
+.form-container {
+    flex: 1;
+    margin-right: 20px;
+}
+.preview-container {
+    flex: 2;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+.preview {
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+}
+.btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: #0056b3;
+}
+
+h1{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #b6a7a7;
+    padding: 10px;
+    margin: 0;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Asegura que esté encima de otros elementos */
+}
+        
+        .preview-container h2{
+            margin-top: 0;
+            background-color: rgb(183, 201, 201);
+            text-align: center;
+
+        }
+        .preview-container .line {
+            border: none; /* Elimina el estilo predeterminado */
+            height: 2px; /* Grosor de la línea */
+            background-color: rgb(183, 201, 201); /* Color */
+            margin: 10px 0; /* Espaciado alrededor */
+        }
+        .thumb {
+            width: 100px; /* Ajusta el tamaño de la previsualización */
+            height: auto;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            }
+        #output {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generador de CV</h1>
+    
+    <div class="container">
+
+        <div class="form-container">
+            <input type="file" multiple accept="image/*">
+            <div id="output"></div>
+
+            <form id="cv-form">
+                <label for="name">Nombres:</label><br>
+                <input type="text" id="name" placeholder="Tu nombre"><br><br>
+
+                <label for="surname">Apellidos:</label><br>
+                <input type="text" id="surname" placeholder="tu apellido"><br><br>
+
+                <label for="email">Correo electrónico:</label><br>
+                <input type="email" id="email" placeholder="Tu correo"><br><br>
+
+                <label for="summary">Resumen profesional:</label><br>
+                <textarea id="summary" placeholder="Tu resumen profesional"></textarea><br><br>
+
+                <label for="experience">Experiencia laboral:</label><br>
+                <textarea id="experience" placeholder="Tu experiencia laboral"></textarea><br><br>
+
+                <label for="education">Educación:</label><br>
+                <textarea id="education" placeholder="Tu educación"></textarea><br><br>
+
+                <button type="button" class="btn" id="generate">Generar Vista Previa</button>
+            </form>
+            <h1>Subir y Previsualizar Imágenes</h1>
+                
+            
+        </div>
+
+    <div class="preview-container">
+            <h2>Vista Previa</h2>
+
+            <div id="cv-preview" class="preview">
+
+                <h3 id="preview-name"></h3>
+
+                <h3 id="preview-surname"></h3>
+
+                <p id="preview-email"></p>
+
+                <hr class="line">
+
+                <p id="preview-summary"></p>
+
+                <h4>Experiencia Laboral</h4>
+                <p id="preview-experience"></p>
+                <h4>Educación</h4>
+                <p id="preview-education"></p>
+            </div>
+            <button class="btn" id="download-pdf">Descargar PDF</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+    <script>
+
+        const output = document.getElementById("output");
+        const myInput = document.querySelector("input");
+
+        myInput.addEventListener("change", uploadAndReadFile);
+        
+    function uploadAndReadFile(e) {
+      const files = e.target.files; // Obtener archivos seleccionados
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        // Crear un elemento de imagen para la previsualización
+        const img = document.createElement("img");
+        img.classList.add("thumb");
+        img.file = file;
+
+        // Agregar la imagen al contenedor de salida
+        output.appendChild(img);
+
+        // Leer el archivo y asignar la imagen como fuente
+        const reader = new FileReader();
+        reader.onload = (function (myImg) {
+          return function (e) {
+            myImg.src = e.target.result; // Asignar la URL como fuente
+          };
+        })(img);
+        reader.readAsDataURL(file); // Leer el archivo como URL
+      }
+    }
+        
+
+        document.getElementById("generate").addEventListener("click", function () {
+            document.getElementById("preview-name").innerText = document.getElementById("name").value;
+            document.getElementById("preview-surname").innerText = document.getElementById("surname").value;
+            document.getElementById("preview-email").innerText = document.getElementById("email").value;
+            document.getElementById("preview-summary").innerText = document.getElementById("summary").value;
+            document.getElementById("preview-experience").innerText = document.getElementById("experience").value;
+            document.getElementById("preview-education").innerText = document.getElementById("education").value;
+        });
+
+        document.getElementById("download-pdf").addEventListener("click", function () {
+            const element = document.getElementById("cv-preview");
+            const options = {
+                margin: 1,
+                filename: 'mi_cv.pdf',
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(options).from(element).save();
+        });
+    </script>
+</body>
+</html>
